@@ -1,6 +1,4 @@
-module Block1
--- (eval, bin2, Expr, ArithmeticError)
-  where
+module Block1 where
 
 
 data Expr = Const Int

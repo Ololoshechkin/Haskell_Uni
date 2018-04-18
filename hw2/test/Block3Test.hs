@@ -50,7 +50,9 @@ main = do
     runParser notOnlySignedInteger "dakjdb" `shouldBe` Nothing
     runParser notOnlySignedInteger "-dakjdb" `shouldBe` Nothing
     runParser notOnlySignedInteger "+dakjdb" `shouldBe` Nothing
-  it "parseListOfLists" $ do
+  it "parseListOfLists" $
       runParser parseListOfLists "2, 1,+10  , 3,5,-7, 2" `shouldBe` Just ([ [1, 10], [5, -7, 2] ], "")
+
+
 
 

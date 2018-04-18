@@ -1,14 +1,19 @@
-module Block11 where
+module Block1Test where
 
 import           Block1
-import           Block2           (stringSum)
+import           Block2              (stringSum)
+import           Data.List           (group, sort)
+import           Hedgehog            (Gen, Property, forAll, property, (===))
 import           Test.Hspec
-import           Test.Tasty       (TestTree)
-import           Test.Tasty.Hspec (Spec, describe, it, shouldBe, testSpec)
+import           Test.Tasty          (TestTree)
+import           Test.Tasty.Hedgehog (testProperty)
+import           Test.Tasty.Hspec    (Spec, describe, it, shouldBe, testSpec)
+
+import qualified Hedgehog.Gen        as Gen
+import qualified Hedgehog.Range      as Range
 
 testEval :: IO TestTree
 testEval = testSpec "Eval test" main
-
 
 main  :: Spec
 main = do
@@ -28,4 +33,14 @@ main = do
     stringSum "1 2 -3" `shouldBe` Just 0
     stringSum "akjdw d" `shouldBe` Nothing
 
+testBin :: [TestTree]
+testBin = [testProperty "bin result length" pRS,
+           testProperty "bin dif" pAD]
 
+genPositiveInt :: Gen Int
+genPositiveInt = Gen.integral $ Range.linear 0 3
+
+pRS :: Property
+pRS = property $ forAll genPositiveInt >>= \n -> length (bin2 n) === (2 ^ n)
+pAD :: Property
+pAD = property $ forAll genPositiveInt >>= \n -> length  (group (sort (bin2 n))) === 2 ^ n
