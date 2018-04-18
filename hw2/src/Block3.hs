@@ -102,14 +102,14 @@ balanced = Parser $ \s -> let t = balanced' [] s in
 -- balances =   stream (balanced' [])
 
 balanced' :: String -> String -> Bool
-balanced' [] ""     = True
-balanced' _  ""     = False
-balanced' [] (c:cs) = balanced' [c] cs
-balanced' (o:os) (c:cs)
-  | isOpening c = balanced' (c:o:os) cs
-  | otherwise   = case Map.lookup o matchingParenthesis of
-      Nothing      -> False
-      Just closing -> (closing == c) && balanced' os cs
+balanced' a b = case (a, b) of
+     ([], "" )    -> True
+     (_, "" )     -> False
+     ([], c:cs)  -> balanced' [c] cs
+     (o:os, c:cs) -> if isOpening c then balanced' (c:o:os) cs
+                         else case Map.lookup o matchingParenthesis of
+                                Nothing      -> False
+                                Just closing -> (closing == c) && balanced' os cs
 
 -- -------------------------- TASK 4 ---------------------------------
 
