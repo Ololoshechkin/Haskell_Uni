@@ -77,18 +77,21 @@ notOnlySignedInteger :: Parser Char Integer
 notOnlySignedInteger =  sign <$> (element '+' <|> element '-' <|> pure ' ') <*> integer
 
 
-matchingParens :: Map Char Char
-matchingParens = Map.fromList [
+matchingParenthesis :: Map Char Char
+matchingParenthesis = Map.fromList [
     ('(', ')')
   , ('{', '}')
   , ('[', ']')
   ]
 
 isOpening :: Char -> Bool
-isOpening c = Data.Maybe.isJust $ Map.lookup c matchingParens
+isOpening c = Data.Maybe.isJust $ Map.lookup c matchingParenthesis
+
+
 
 balanced = Parser $ \s -> let t = balanced' [] s in
             if t then  Just((), s) else Nothing
+-- balances =   stream (balanced' [])
 
 balanced' :: String -> String -> Bool
 balanced' [] ""     = True
@@ -96,12 +99,9 @@ balanced' _  ""     = False
 balanced' [] (c:cs) = balanced' [c] cs
 balanced' (o:os) (c:cs)
   | isOpening c = balanced' (c:o:os) cs
-  | otherwise   = case Map.lookup o matchingParens of
+  | otherwise   = case Map.lookup o matchingParenthesis of
       Nothing -> False
---       Just (closing == c) && balanced' os cs
-      Just closing -> if closing == c
-        then balanced' os cs
-        else False
+      Just closing -> (closing == c) && balanced' os cs
 
 -- -------------------------- TASK 4 ---------------------------------
 

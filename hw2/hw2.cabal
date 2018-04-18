@@ -53,7 +53,7 @@ test-suite hw2-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
   build-depends:
       base >=4.7 && <5
-    , xcontainers
+    , containers
     , hw2
     , hspec
     , hedgehog

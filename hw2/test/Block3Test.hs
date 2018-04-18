@@ -2,9 +2,8 @@ module Block3Test where
 
 import           Block3
 import           Data.Char        (isUpper)
-import           Test.Hspec
 import           Test.Tasty       (TestTree)
-import           Test.Tasty.Hspec (Spec, describe, it, shouldBe, testSpec)
+import           Test.Tasty.Hspec (Spec, it, shouldBe, testSpec)
 
 testParser :: IO TestTree
 testParser = testSpec "Parser test" main
@@ -37,21 +36,21 @@ main = do
     runParser balanced "[]" `shouldBe` Just((), "[]")
     runParser balanced "()()()()[]((()()){})" `shouldBe` Just((), "()()()()[]((()()){})")
     runParser balanced "]" `shouldBe` Nothing
---   it "onlySignedInteger" $ do
---     runParser onlySignedInteger "-12" `shouldBe` Just (-12,"")
---     runParser onlySignedInteger "+12" `shouldBe` Just (12,"")
---     runParser onlySignedInteger "12" `shouldBe` Nothing
---     runParser onlySignedInteger "dakjdb" `shouldBe` Nothing
---     runParser onlySignedInteger "-dakjdb" `shouldBe` Nothing
---     runParser onlySignedInteger "+dakjdb" `shouldBe` Nothing
---   it "notOnlySignedInteger" $ do
---     runParser notOnlySignedInteger "-12" `shouldBe` Just (-12,"")
---     runParser notOnlySignedInteger "+12" `shouldBe` Just (12,"")
---     runParser notOnlySignedInteger "12" `shouldBe` Just (12,"")
---     runParser notOnlySignedInteger "dakjdb" `shouldBe` Nothing
---     runParser notOnlySignedInteger "-dakjdb" `shouldBe` Nothing
---     runParser notOnlySignedInteger "+dakjdb" `shouldBe` Nothing
---   it "parseListOfLists" $ do
---       runParser parseListOfLists "2, 1,+10  , 3,5,-7, 2" `shouldBe` Just ([ [1, 10], [5, -7, 2] ], "")
+  it "onlySignedInteger" $ do
+    runParser onlySignedInteger "-12" `shouldBe` Just (-12,"")
+    runParser onlySignedInteger "+12" `shouldBe` Just (12,"")
+    runParser onlySignedInteger "12" `shouldBe` Nothing
+    runParser onlySignedInteger "dakjdb" `shouldBe` Nothing
+    runParser onlySignedInteger "-dakjdb" `shouldBe` Nothing
+    runParser onlySignedInteger "+dakjdb" `shouldBe` Nothing
+  it "notOnlySignedInteger" $ do
+    runParser notOnlySignedInteger "-12" `shouldBe` Just (-12,"")
+    runParser notOnlySignedInteger "+12" `shouldBe` Just (12,"")
+    runParser notOnlySignedInteger "12" `shouldBe` Just (12,"")
+    runParser notOnlySignedInteger "dakjdb" `shouldBe` Nothing
+    runParser notOnlySignedInteger "-dakjdb" `shouldBe` Nothing
+    runParser notOnlySignedInteger "+dakjdb" `shouldBe` Nothing
+  it "parseListOfLists" $ do
+      runParser parseListOfLists "2, 1,+10  , 3,5,-7, 2" `shouldBe` Just ([ [1, 10], [5, -7, 2] ], "")
 
 
