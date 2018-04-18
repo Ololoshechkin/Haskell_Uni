@@ -1,0 +1,66 @@
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 457c110dfc2758c76941c404fdb526956bf3676290392b725581d6ca1dbc7123
+
+name:           hw2
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/githubuser/hw2#readme>
+homepage:       https://github.com/githubuser/hw2#readme
+bug-reports:    https://github.com/githubuser/hw2/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2018 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/hw2
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+      , containers
+      , hedgehog
+      , tasty
+      , tasty-hedgehog
+      , tasty-hspec
+  exposed-modules:
+      Lib
+      Block1
+      Block2
+      Block3
+  other-modules:
+      Paths_hw2
+  default-language: Haskell2010
+
+
+test-suite hw2-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
+  build-depends:
+      base >=4.7 && <5
+    , xcontainers
+    , hw2
+    , hspec
+    , hedgehog
+    , tasty
+    , tasty-hedgehog
+    , tasty-hspec
+
+  other-modules:
+      Block12, Block11, Block3Test
+  default-language: Haskell2010
