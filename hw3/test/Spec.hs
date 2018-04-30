@@ -4,4 +4,4 @@ import Control.Applicative
 
 main :: IO ()
 main =  testEval  >>=
-    \test -> defaultMain $ testGroup "hw2" $ [test]
+    \test -> defaultMain $ testGroup "hw3" $ [test]
