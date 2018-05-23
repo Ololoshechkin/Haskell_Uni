@@ -1,0 +1,4 @@
+mut z = 6
+if (z * 2) <= 15 then {mut y = 2
+} else {mut y = 3
+}

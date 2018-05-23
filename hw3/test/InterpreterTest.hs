@@ -1,20 +1,37 @@
 module InterpreterTest where
 import           Interpreter
 
-import qualified Data.Map.Strict as Map
+import qualified Data.ByteString.UTF8 as S8
+import qualified Data.Map.Strict      as Map
 import           Test.Hspec
-import           Test.Tasty          (TestTree)
-import           Test.Tasty.Hspec    (Spec, describe, it, shouldBe, testSpec)
-import qualified Data.ByteString.UTF8       as S8
+import           Test.Tasty           (TestTree)
+import           Test.Tasty.Hspec     (Spec, describe, it, shouldBe, testSpec)
 
 testEval :: IO TestTree
 testEval = testSpec "All tests" spec
 
 spec :: Spec
 spec = do
+    let map = Map.singleton "x" 1
+    describe "Evaluation Expression Bool Tests" $ do
+        it "EqTest" $ do
+            runEvalBool (Eq (Const 1) (Const 2)) map `shouldReturn` False
+            runEvalBool (Eq (Const 2) (Const 2)) map `shouldReturn` True
+        it "NEqTest" $ do
+            runEvalBool (NEq (Const 1) (Const 2)) map `shouldReturn` True
+            runEvalBool (NEq (Const 2) (Const 2)) map `shouldReturn` False
+        it "GtTest" $ do
+            runEvalBool (Gt (Const 1) (Const 2)) map `shouldReturn` False
+            runEvalBool (Gt (Const 2) (Const 1)) map `shouldReturn` True
+        it "GtEqTest" $
+            runEvalBool (GtEq (Const 2) (Const 2)) map `shouldReturn` True
+        it "LtTest" $ do
+            runEvalBool (Lt (Const 1) (Const 2)) map `shouldReturn` True
+            runEvalBool (Lt (Const 2) (Const 1)) map `shouldReturn` False
+        it "LtEqTest" $
+            runEvalBool (LtEq (Const 2) (Const 2)) map `shouldReturn` True
     describe "Evaluation Expression Tests" $ do
-        let map = Map.singleton "x" 1
-        it "ConstTest" $ do
+        it "ConstTest" $
             runEval (Const 1) map `shouldReturn` 1
         it "VarTest" $ do
             runEval (Var "x") map `shouldReturn` 1
@@ -35,10 +52,10 @@ spec = do
         it "LetTest" $ do
             runEval (Let "x" (Const 2) $ Var "x") map `shouldReturn` 2
             runEval
-                (Let ("y") (Add (Const 2) (Const 2))
-                     (Add (Var "y") (Mul (Const 3) ("x" `Let` (Const 2) $ Var "x"))))
+                (Let "y" (Add (Const 2) (Const 2))
+                     (Add (Var "y") (Mul (Const 3) ("x" `Let` Const 2 $ Var "x"))))
                 map `shouldReturn`10
-    describe "Statement Tests" $ do
+    describe "Statement Tests" $
         it "runStatement" $ do
             runStatement
                 [Assignment {var = "x", val = Add {a = Const 4, b = Mul {a = Const 2, b = Const 3}}}]
@@ -49,11 +66,11 @@ spec = do
                 `shouldReturn` Map.singleton "x" 5
             runStatement [OutState {val = Add {a = Var "x", b = Const 7}}]
                 `shouldThrow` (== ComputationException
-                    (OutState {val = Add {a = Var "x", b = Const 7}})
+                    OutState {val = Add {a = Var "x", b = Const 7}}
                     (UndefinedVariable "x"))
     describe "Parser Tests" $ do
         it "base" $ do
-            parseExpressions "2 + 10" `shouldReturn` (Const (2::Int)) `Add` (Const 10)
+            parseExpressions "2 + 10" `shouldReturn` Add (Const (2::Int)) (Const 10)
             parseWithExpressionEvaluation "2 + 10" `shouldReturn` 12
         it "parseExpressions" $ do
             parseExpressions " 2 * 4" `shouldReturn` Mul (Const 2) (Const 4)
@@ -75,7 +92,7 @@ spec = do
         it "parseWithStatementEvaluation" $ do
             parseWithStatementEvaluation "mut x = 4 + 3 * 2" `shouldReturn` Map.singleton "x" 10
             parseWithStatementEvaluation "mut x = 4 + 3 * 2 + y" `shouldThrow` (== ComputationException
-                (Assignment {var = "x", val = Add {a = Add {a = Const 4, b = Mul {a = Const 3, b = Const 2}}, b = Var "y"}})
+                Assignment {var = "x", val = Add {a = Add {a = Const 4, b = Mul {a = Const 3, b = Const 2}}, b = Var "y"}}
                 (UndefinedVariable "y"))
             parseWithStatementEvaluation "x = 4 + 3 * 2" `shouldThrow` (== UndefinedVariableException "x")
         let testProgram = S8.fromString $ unlines ["mut x = 1 + 4","x = x * 5 / (let z = 5 in z) + (let x = 3 in x)", "< x + 1"]

@@ -6,11 +6,9 @@
 module Interpreter where
 -- :set -XOverloadedStrings
 import           Control.Monad              (replicateM_, void)
-import           Control.Monad.Catch        (Exception, MonadCatch, MonadThrow,
-                                             catch, throwM)
+import           Control.Monad.Catch        (Exception, MonadCatch, MonadThrow, catch, throwM)
 import           Control.Monad.Cont         (callCC)
-import           Control.Monad.Reader       (MonadReader, asks, local,
-                                             runReaderT)
+import           Control.Monad.Reader       (MonadReader, asks, local, runReaderT)
 import           Control.Monad.State        (MonadIO, MonadState, StateT, get,
                                              liftIO, modify, put, runStateT)
 import           Data.Functor.Identity
@@ -27,8 +25,7 @@ import qualified Data.ByteString.UTF8       as S8
 -- import  Prelude (elem, Show, IO, String, Int, empty, show)
 
 import           Text.Megaparsec
-import           Text.Megaparsec.Byte       (alphaNumChar, char, eol,
-                                             letterChar, string)
+import           Text.Megaparsec.Byte       (alphaNumChar, char, eol, letterChar, string)
 import qualified Text.Megaparsec.Byte.Lexer as L
 import           Text.Megaparsec.Expr
 
@@ -116,13 +113,13 @@ runEvalBool :: (MonadThrow t) => Expression -> ExpressionMap -> t Bool
 runEvalBool expr = runReaderT (evalBool expr)
 
 data Statement =
-    Assignment  { var :: String, val :: Expression}
-    | Reassignment  { var :: String, val :: Expression}
-    | InState  { var :: String}
-    | OutState  { val :: Expression}
-    | IfState { cond :: Expression, e1 :: [Statement], e2 :: [Statement]}
+    Assignment  {var :: String, val :: Expression}
+    | Reassignment  {var :: String, val :: Expression}
+    | InState  {var :: String}
+    | OutState  {val :: Expression}
+    | IfState {cond :: Expression, e1 :: [Statement], e2 :: [Statement]}
     | Break {var :: String}
-    | ForLoop  { val    :: Expression, to_ :: Expression, body  :: [Statement]}
+    | ForLoop  {val    :: Expression, to_ :: Expression, body  :: [Statement]}
     deriving (Read, Show, Eq, Typeable)
 
 
@@ -195,7 +192,8 @@ executeProgram :: StatementContext t -> IO t
 executeProgram ctx = fst <$> runStateT (runStmt ctx) Map.empty
 runStatement :: [Statement] -> IO ExpressionMap
 runStatement = executeProgram . evaluateStatement
-
+runStatement_ :: [Statement] -> IO ()
+runStatement_ = void . executeProgram . evaluateStatement
 
 
 type Parser = Parsec Void S8.ByteString
@@ -336,15 +334,9 @@ programParser :: Parser [Statement]
 programParser = spaceConsumer *> many (statementParser <* eol)
 runProgram_ :: String -> S8.ByteString -> IO ExpressionMap
 runProgram_ name input = either (throwM . ParseException) return (parse programParser name input) >>= runStatement
---
--- runProgram_ :: String -> Str -> IO ()
--- runProgram_ name input = useParser programParser name input >>= interpret_
 
--- считаывать программу из файла
--- typeable
--- for loop bound
 
 --
--- runProgram name file = do
---     text <- unsafePerformIO . readFile $ file
---     runProgram_ name [text]
+runProgram name file = do
+    text <- PackedStr.readFile $ file
+    runProgram_ name text
